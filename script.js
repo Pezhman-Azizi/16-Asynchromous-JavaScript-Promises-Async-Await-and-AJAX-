@@ -123,7 +123,7 @@ console.log(request);
 */
 
 // -------------------------------------------------- consuming promises:
-
+/*
 // const getCountryData = function(country){
 //   // note: calling a fetch immidiately returns a promise. And in the beginning this promise (as being an asynchoronous) is pending
 //   // and there are methods on the promise. one of them is called then 👇🏻
@@ -146,3 +146,28 @@ const getCountryData = function(country){
   )
 }
 getCountryData('portugal');
+*/
+
+// -------------------------------------------------- chaining promises:
+
+const getCountryData = function(country){
+  // country 1:
+
+  // note: calling a fetch immidiately returns a promise. And in the beginning this promise (as being an asynchoronous) is pending
+  // and there are methods on the promise. one of them is called then 👇🏻
+  fetch(`https://restcountries.com/v2/name/${country}`)
+  .then(response => response.json())
+  .then (data => {
+    renderCountry(data[0]);
+    console.log(data[0]);
+    const neighbor = data[0].borders?.[0];
+
+    if(!neighbor) return;
+
+    // country 2:
+    return fetch(`https://restcountries.com/v2/alpha/${neighbor}`);
+  })
+  .then(response => response.json())
+  .then(data => renderCountry(data, 'neighbour'))
+}
+getCountryData('portugal')
