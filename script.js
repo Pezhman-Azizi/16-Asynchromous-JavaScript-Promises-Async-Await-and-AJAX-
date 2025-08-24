@@ -52,7 +52,7 @@ getCountryData('portugal')
 //  see the screen shot
 
 // ------------------------------------ welcome to cal back hell
-/*
+
 const renderCountry = function(data, className = ''){
 
     const html = `
@@ -71,7 +71,7 @@ const renderCountry = function(data, className = ''){
     countriesContainer.style.opacity = 1;
 
   }
-
+/*
 const getCountryAndNeighbor = function (country){
 
   // AJAX call country 1
@@ -113,11 +113,36 @@ getCountryAndNeighbor('usa');
 */
 
 // -------------------------------------------------- promises and fetch api:
-
+/*
 //  const request = new XMLHttpRequest();
 //   request.open('GET', `https://restcountries.com/v2/name/${country}`);
 //   request.send();
 
 const request = fetch(`https://restcountries.com/v2/name/portugal`)
 console.log(request);
+*/
 
+// -------------------------------------------------- consuming promises:
+
+// const getCountryData = function(country){
+//   // note: calling a fetch immidiately returns a promise. And in the beginning this promise (as being an asynchoronous) is pending
+//   // and there are methods on the promise. one of them is called then 👇🏻
+//   fetch(`https://restcountries.com/v2/name/${country}`).then(function(response){
+//     console.log(response);
+//     return response.json();
+//   }).then (function(data){
+//     console.log(data);
+//     renderCountry(data[0])
+//   })
+// }
+
+
+const getCountryData = function(country){
+  // note: calling a fetch immidiately returns a promise. And in the beginning this promise (as being an asynchoronous) is pending
+  // and there are methods on the promise. one of them is called then 👇🏻
+  fetch(`https://restcountries.com/v2/name/${country}`)
+  .then(response => response.json())
+  .then (data => renderCountry(data[0])
+  )
+}
+getCountryData('portugal');
