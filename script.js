@@ -45,3 +45,7 @@ const getCountryData = function (country){
 
 getCountryData('usa')
 getCountryData('brazil')
+
+// ------------------------------------ how the web works: request ans responses
+//  see the screen shot
+
