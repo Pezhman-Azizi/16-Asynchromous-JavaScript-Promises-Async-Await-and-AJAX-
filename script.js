@@ -2,7 +2,29 @@
 
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
+const renderError = function(message){
+  countriesContainer.insertAdjacentText('beforeend', message);
+  // countriesContainer.style.opacity =1
+}
 
+const renderCountry = function(data, className = ''){
+
+    const html = `
+          <article class="country ${className}">
+            <img class="country__img" src="${data.flag}" />
+            <div class="country__data">
+              <h3 class="country__name">${data.name}</h3>
+              <h4 class="country__region">${data.region}</h4>
+              <p class="country__row"><span>👫</span>${(+data.population / 1000000).toFixed(1)}</p>
+              <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
+              <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
+            </div>
+          </article>`
+
+    countriesContainer.insertAdjacentHTML('beforeend', html);
+    // countriesContainer.style.opacity = 1;
+
+  };
 // NEW COUNTRIES API URL (use instead of the URL shown in videos):
 // https://restcountries.com/v2/name/portugal
 
@@ -53,24 +75,7 @@ getCountryData('portugal')
 
 // ------------------------------------ welcome to cal back hell
 
-const renderCountry = function(data, className = ''){
 
-    const html = `
-          <article class="country ${className}">
-            <img class="country__img" src="${data.flag}" />
-            <div class="country__data">
-              <h3 class="country__name">${data.name}</h3>
-              <h4 class="country__region">${data.region}</h4>
-              <p class="country__row"><span>👫</span>${(+data.population / 1000000).toFixed(1)}</p>
-              <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
-              <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
-            </div>
-          </article>`
-
-    countriesContainer.insertAdjacentHTML('beforeend', html);
-    countriesContainer.style.opacity = 1;
-
-  }
 /*
 const getCountryAndNeighbor = function (country){
 
@@ -127,7 +132,8 @@ console.log(request);
 // const getCountryData = function(country){
 //   // note: calling a fetch immidiately returns a promise. And in the beginning this promise (as being an asynchoronous) is pending
 //   // and there are methods on the promise. one of them is called then 👇🏻
-//   fetch(`https://restcountries.com/v2/name/${country}`).then(function(response){
+//   fetch(`https://restcountries.com/v2/name/${country}`)
+//   .then(function(response){
 //     console.log(response);
 //     return response.json();
 //   }).then (function(data){
@@ -149,7 +155,7 @@ getCountryData('portugal');
 */
 
 // -------------------------------------------------- chaining promises:
-
+/*
 const getCountryData = function(country){
   // country 1:
 
@@ -171,3 +177,41 @@ const getCountryData = function(country){
   .then(data => renderCountry(data, 'neighbour'))
 }
 getCountryData('portugal')
+
+*/
+
+// -------------------------------------------------- handling rejected promises:
+
+const getCountryData = function(country){
+  // country 1:
+
+  // note: calling a fetch immidiately returns a promise. And in the beginning this promise (as being an asynchoronous) is pending
+  // and there are methods on the promise. one of them is called then 👇🏻
+  fetch(`https://restcountries.com/v2/name/${country}`)
+  .then(response => response.json())
+  .then (data => {
+    renderCountry(data[0]);
+    console.log(data[0]);
+    const neighbor = data[0].borders?.[0];
+
+    if(!neighbor) return;
+
+    // country 2:
+    return fetch(`https://restcountries.com/v2/alpha/${neighbor}`);
+  })
+  .then(response => response.json())
+  .then(data => renderCountry(data, 'neighbour'))
+  .catch(err => {
+    console.error(`${err} 💣 💣 💣`);
+    renderError(`something went wrong 💣 💣 💣 ${err.message}. Try again!`)
+  })
+  .finally(() => {
+    countriesContainer.style.opacity =1
+  })
+};
+
+btn.addEventListener('click', function(){
+  getCountryData('portugal')
+})
+
+getCountryData('kudghrybiu')
