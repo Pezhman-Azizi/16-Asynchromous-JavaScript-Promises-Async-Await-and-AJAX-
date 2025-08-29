@@ -2,9 +2,10 @@
 
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
-const renderError = function(message){
-  countriesContainer.insertAdjacentText('beforeend', message);
-  // countriesContainer.style.opacity =1
+
+const renderError = function(msg){
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  countriesContainer.style.opacity =1
 }
 
 const renderCountry = function(data, className = ''){
@@ -22,7 +23,7 @@ const renderCountry = function(data, className = ''){
           </article>`
 
     countriesContainer.insertAdjacentHTML('beforeend', html);
-    // countriesContainer.style.opacity = 1;
+    countriesContainer.style.opacity = 1;
 
   };
 // NEW COUNTRIES API URL (use instead of the URL shown in videos):
@@ -181,7 +182,7 @@ getCountryData('portugal')
 */
 
 // -------------------------------------------------- handling rejected promises:
-
+/*
 const getCountryData = function(country){
   // country 1:
 
@@ -203,15 +204,100 @@ const getCountryData = function(country){
   .then(data => renderCountry(data, 'neighbour'))
   .catch(err => {
     console.error(`${err} 💣 💣 💣`);
-    renderError(`something went wrong 💣 💣 💣 ${err.message}. Try again!`)
+    renderError(` something went wrong 💣 💣 💣 ${err.message}. Try again. `)
   })
   .finally(() => {
-    countriesContainer.style.opacity =1
+    countriesContainer.style.opacity = 1;
   })
 };
 
 btn.addEventListener('click', function(){
   getCountryData('portugal')
-})
+});
 
-getCountryData('kudghrybiu')
+getCountryData('jlhgdviuy')
+*/
+// ---------------------------------------------------- throwing errors manually:
+
+const getJSON = function (url, errorMsg ='something went wrong') {
+  return fetch(url).then( response => {
+    if(!response.ok) throw new Error(`${errorMsg} (${response.status})`);
+    return response.json();
+  });
+};
+
+// const getCountryData = function(country){
+//   // country 1:
+
+//   // note: calling a fetch immidiately returns a promise. And in the beginning this promise (as being an asynchoronous) is pending
+//   // and there are methods on the promise. one of them is called then 👇🏻
+//   fetch(`https://restcountries.com/v2/name/${country}`)
+//   .then(response => {
+//     console.log(response);
+
+//     if(!response.ok)
+//       throw new Error(`country not found ${response.status}`)
+
+//     return response.json()
+//   })
+//   .then (data => {
+//     renderCountry(data[0]);
+//     console.log(data[0]);
+
+//     // const neighbor = data[0].borders?.[0];
+//     const neighbor = 'hjsdfgyasdgfjyadhsgfadsyfg';
+
+//     if(!neighbor) return;
+
+//     // country 2:
+//     return fetch(`https://restcountries.com/v2/alpha/${neighbor}`);
+//   })
+//   .then(response => {
+
+//       if(!response.ok)
+//         throw new Error(`country not found ${response.status}`);
+
+//     return response.json()
+//   })
+//   .then(data => renderCountry(data, 'neighbour'))
+//   .catch(err => {
+//     console.error(`${err} 💣 💣 💣`);
+//     renderError(` something went wrong 💣 💣 💣 ${err.message}. Try again. `)
+//   })
+//   .finally(() => {
+//     countriesContainer.style.opacity = 1;
+//   })
+// };
+
+const getCountryData = function(country){
+  // country 1:
+
+  // note: calling a fetch immidiately returns a promise. And in the beginning this promise (as being an asynchoronous) is pending
+  // and there are methods on the promise. one of them is called then 👇🏻
+
+  getJSON(`https://restcountries.com/v2/name/${country}`, 'Country not found')
+  .then (data => {
+    renderCountry(data[0]);
+    console.log(data[0]);
+
+    const neighbor = data[0].borders?.[0];
+
+    if(!neighbor) throw new Error("no neighbor found");
+
+    // country 2:
+    return getJSON(`https://restcountries.com/v2/alpha/${neighbor}`, 'country not found');
+  })
+  .then(data => renderCountry(data, 'neighbour'))
+  .catch(err => {
+    console.error(`${err} 💣 💣 💣`);
+    renderError(` something went wrong 💣 💣 💣 ${err.message}. Try again. `)
+  })
+  .finally(() => {
+    countriesContainer.style.opacity = 1;
+  })
+};
+
+
+btn.addEventListener('click', function(){
+  getCountryData('australia')
+});
