@@ -342,7 +342,7 @@ btn.addEventListener('click', function(){
 // GOOD LUCK 😀
 
 // const url = https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}
-
+/*
 const renderError2 = function(msg){
   countriesContainer.insertAdjacentText('beforeend', msg)
   countriesContainer.style.opacity = 1;
@@ -390,3 +390,8 @@ const whereAmI = function(lat, lng){
 whereAmI(19.037, 72.873)
 whereAmI(52.508, 13.381)
 whereAmI(-33.933, 18.474)
+*/
+
+
+// ------------------------------------------------------------------------------------------------ 269-Async-behind-the-scenes-the-event-loop
+// see the screenshot on PR 
