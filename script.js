@@ -394,4 +394,22 @@ whereAmI(-33.933, 18.474)
 
 
 // ------------------------------------------------------------------------------------------------ 269-Async-behind-the-scenes-the-event-loop
-// see the screenshot on PR 
+// see the screenshot on PR
+
+
+// ------------------------------------------------------------------------------------------------ 270-the event loop in practice
+
+console.log('test start');
+setTimeout(() => {
+  console.log('0 sec timer');
+}, 0);
+// this one is the promise that immediately resolves with a success value!
+Promise.resolve('Resolved promise 1').then(res => console.log(res)
+)
+
+Promise.resolve('resolved promise 2').then(res => {
+  for (let i =0; i<10000000000; i++){}
+  console.log(res);
+})
+
+console.log('test end');
