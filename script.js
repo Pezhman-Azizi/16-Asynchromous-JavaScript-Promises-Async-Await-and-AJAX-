@@ -398,7 +398,7 @@ whereAmI(-33.933, 18.474)
 
 
 // ------------------------------------------------------------------------------------------------ 270-the event loop in practice
-
+/*
 console.log('test start');
 setTimeout(() => {
   console.log('0 sec timer');
@@ -413,3 +413,55 @@ Promise.resolve('resolved promise 2').then(res => {
 })
 
 console.log('test end');
+*/
+// ------------------------------------------------------------------------------------------------ 270-the event loop in practice
+
+const lotteryPromise = new Promise(function(resolve, reject){
+
+  console.log('lottery draw is happening...');
+
+  setTimeout(() =>{
+
+    if(Math.random() >= 0.5){
+      resolve('You win 💰')
+    }
+    else{
+      reject( new Error('you lost your money'))
+    }
+  }, 2000);
+
+})
+
+lotteryPromise
+.then(res => console.log(res))
+.catch(err => console.error(err))
+
+// Promisifying set time out:
+
+const wait = function(seconds){
+  return new Promise(function(resolve){
+    setTimeout(resolve, seconds * 1000);
+  })
+}
+
+wait(1)
+.then(() => {
+  console.log('i waited for 1 seconds')
+  return wait(1)
+})
+.then(() => {
+  console.log('i waited for 2 second')
+  return wait(2)
+})
+.then(() => {
+  console.log('i waited for 3 seconds')
+  return wait(3)
+})
+.then(() => {
+  console.log('i waited for 4 seconds')
+  return wait(4)
+})
+
+//  we have resolve and reject static methods that will return a promise immidiately:
+Promise.resolve('abc').then( x => console.log(x));
+Promise.reject(new Error('there is a problem you see')).catch( x => console.error(x));
