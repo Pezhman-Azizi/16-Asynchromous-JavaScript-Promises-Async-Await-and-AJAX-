@@ -523,7 +523,7 @@ btn.addEventListener('click', whereAmI)
 */
 
 // ---------------------------------------------------------------  274-consuming promises with Async/Await
-
+/*
 const getPosition = function(){
     return new Promise(function(resolve, reject){
     navigator.geolocation.getCurrentPosition(resolve, reject)
@@ -550,4 +550,49 @@ const whereAmI = async function(){
     renderCountry(data[0])
 
 }
+whereAmI()
+*/
+
+// ---------------------------------------------------------------  275-Error handling with try and catch
+
+const getPosition = function(){
+    return new Promise(function(resolve, reject){
+    navigator.geolocation.getCurrentPosition(resolve, reject)
+  })
+}
+
+const whereAmI = async function(){
+
+    try{  // Geolocation:
+      const pos = await getPosition();
+      console.log(pos);
+      const {latitude: lat, longitude: lng} = pos.coords
+
+      // Reverse GeoCoding:
+      const resGeo = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`);
+
+      if(!resGeo.ok) throw new Error('problem getting location data');
+
+      const dataGeo = await resGeo.json()
+      console.log(dataGeo);
+
+      // country data:
+      const res = await fetch(`https://restcountries.com/v2/name/${dataGeo.countryCode}`);
+
+      if(!res.ok) throw new Error('problem getting country');
+
+      const data = await res.json();
+      console.log(data);
+      renderCountry(data[0])
+
+    }
+    catch(err){
+      console.error(`${err} 💣`);
+      renderError(`💣 ${err.message}`)
+    }
+}
+whereAmI()
+whereAmI()
+whereAmI()
+whereAmI()
 whereAmI()
