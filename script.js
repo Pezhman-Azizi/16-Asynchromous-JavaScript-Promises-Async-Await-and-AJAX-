@@ -469,7 +469,7 @@ Promise.reject(new Error('there is a problem you see')).catch( x => console.erro
 
 // ---------------------------------------------------------------- 272. Promisifying the Geolocation API
 
-
+/*
 // navigator.geolocation.getCurrentPosition(
 //   position => console.log(position),
 //   err => reject(err)
@@ -520,3 +520,34 @@ const whereAmI = function(){
   })
 }
 btn.addEventListener('click', whereAmI)
+*/
+
+// ---------------------------------------------------------------  274-consuming promises with Async/Await
+
+const getPosition = function(){
+    return new Promise(function(resolve, reject){
+    navigator.geolocation.getCurrentPosition(resolve, reject)
+  })
+}
+
+const whereAmI = async function(){
+
+    // Geolocation:
+    const pos = await getPosition();
+    console.log(pos);
+    const {latitude: lat, longitude: lng} = pos.coords
+
+    // Reverse GeoCoding:
+    const resGeo = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`);
+
+    const dataGeo = await resGeo.json()
+    console.log(dataGeo);
+
+    // country data:
+    const res = await fetch(`https://restcountries.com/v2/name/${dataGeo.countryCode}`);
+    const data = await res.json();
+    console.log(data);
+    renderCountry(data[0])
+
+}
+whereAmI()
