@@ -342,7 +342,7 @@ btn.addEventListener('click', function(){
 // GOOD LUCK 😀
 
 // const url = https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}
-/*
+
 const renderError2 = function(msg){
   countriesContainer.insertAdjacentText('beforeend', msg)
   countriesContainer.style.opacity = 1;
@@ -353,13 +353,13 @@ const getJSON = function(url, errorMsg ='something went wrong'){
   return fetch(url)
   .then(response => {
     if(!response.ok)
-      throw new Error(`problem with geo coding ${response.status}`)
+      throw new Error(`problem with geocoding ${response.status}`)
     return response.json()
 
   });
 
 };
-
+/*
 const whereAmI = function(lat, lng){
   getJSON(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`, 'country NOT found')
   .then(data => {
@@ -414,8 +414,8 @@ Promise.resolve('resolved promise 2').then(res => {
 
 console.log('test end');
 */
-// ------------------------------------------------------------------------------------------------ 270-the event loop in practice
-
+// ------------------------------------------------------------------------------------------------ 271. building a simple promise
+/*
 const lotteryPromise = new Promise(function(resolve, reject){
 
   console.log('lottery draw is happening...');
@@ -439,7 +439,7 @@ lotteryPromise
 // Promisifying set time out:
 
 const wait = function(seconds){
-  return new Promise(function(resolve){
+  return new Promise(function(resolve){j
     setTimeout(resolve, seconds * 1000);
   })
 }
@@ -465,3 +465,58 @@ wait(1)
 //  we have resolve and reject static methods that will return a promise immidiately:
 Promise.resolve('abc').then( x => console.log(x));
 Promise.reject(new Error('there is a problem you see')).catch( x => console.error(x));
+*/
+
+// ---------------------------------------------------------------- 272. Promisifying the Geolocation API
+
+
+// navigator.geolocation.getCurrentPosition(
+//   position => console.log(position),
+//   err => reject(err)
+// );
+// console.log('getting position');
+
+const getPosition = function(){
+    return new Promise(function(resolve, reject){
+    //   navigator.geolocation.getCurrentPosition(
+    //   position => resolve(position),
+    //   err => reject(err)
+    // );
+    navigator.geolocation.getCurrentPosition(resolve, reject)
+  })
+}
+getPosition().then( pos => console.log(pos))
+
+
+const whereAmI = function(){
+
+  getPosition().then(pos => {
+    const {latitude: lat, longitude: lng} = pos.coords;
+    return getJSON(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`, 'country NOT found')
+  })
+  .then(data => {
+    const {city, countryName, countryCode} = data;
+    console.log(`you are in ${city}, ${countryName}`)
+
+    const country = data.countryName;
+    if(!countryCode) throw new Error ('country NOT found')
+
+    //countryName extraction
+    return getJSON(`https://restcountries.com/v2/name/${countryCode}`)
+  })
+
+  .then(data2 => {
+    // console.log(data2);
+    renderCountry(data2[0])
+  })
+
+  .catch(err => {
+    console.error(err),
+    renderError2(`${err.message} `)
+  }
+  )
+  .finally(()=>{
+    countriesContainer.style.opacity = 1;
+  })
+}
+btn.addEventListener('click', whereAmI)
